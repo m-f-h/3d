@@ -9,12 +9,12 @@
 
          /*========== Define and store the geometry ==========*/
          var cube_vertices = [ /* four corners for each of the 6 faces */
-            -1,-1,-1,   1,-1,-1,   1, 1,-1,  -1, 1,-1,
-            -1,-1, 1,   1,-1, 1,   1, 1, 1,  -1, 1, 1,
-            -1,-1,-1,  -1, 1,-1,  -1, 1, 1,  -1,-1, 1,
-             1,-1,-1,   1, 1,-1,   1, 1, 1,   1,-1, 1,
-            -1,-1,-1,  -1,-1, 1,   1,-1, 1,   1,-1,-1,
-            -1, 1,-1,  -1, 1, 1,   1, 1, 1,   1, 1,-1, 
+            -1,-1, 1,   1,-1, 1,   1, 1, 1,  -1, 1, 1, /* z =  1 */
+            -1,-1,-1,   1,-1,-1,   1, 1,-1,  -1, 1,-1, /* z = -1 */
+            -1, 1,-1,  -1, 1, 1,   1, 1, 1,   1, 1,-1, /* y =  1 */
+            -1,-1,-1,  -1,-1, 1,   1,-1, 1,   1,-1,-1, /* y = -1 */
+             1,-1,-1,   1, 1,-1,   1, 1, 1,   1,-1, 1, /* x =  1 */
+            -1,-1,-1,  -1, 1,-1,  -1, 1, 1,  -1,-1, 1, /* x = -1 */
          ];
 
   const faceColors = [ /* R,G,B,T : colors of the faces */
@@ -25,16 +25,17 @@
     [1.0,  1.0,  0.0,  1.0],    // right : yellow
     [1.0,  0.0,  1.0,  1.0]     // left : magenta
   ];
-  // Convert table of (face) colors to table of vertex colors, by repeating each face color 4 x for each corner of the face. 
+  // Convert table of (face) colors to table of colors for each corner of the face
+  // by repeating each face color 4 times, once for each of the 4 corners of the face. 
   var cube_colors = []; /* colors of the borders */
   for (j=0; j<faceColors.length; j++) {
     const c = faceColors[j];
     cube_colors = cube_colors.concat(c, c, c, c);
   }
-  var cube_indices = [ /* this links faces to vertices */
-             0, 1, 2,  0, 2, 3,  4, 5, 6,  4, 6, 7,
-             8, 9,10,  8,10,11, 12,13,14, 12,14,15,
-            16,17,18, 16,18,19, 20,21,22, 20,22,23 
+  var cube_indices = [ /* this defines faces as two triangles, giving the indices of the 3 vertices */
+             0, 1, 2,  0, 2, 3, /* top   (z=1) */   4, 5, 6,  4, 6, 7, /* bottom */
+             8, 9,10,  8,10,11, /* right (y=1) */  12,13,14, 12,14,15, /* left   */
+            16,17,18, 16,18,19, /* front (x=1) */  20,21,22, 20,22,23  /* back   */
          ];
 
 // TO DO: convert  the following to function and call it with cube_{vertices,colors,indices} -- or analog for other polyhedra
@@ -57,9 +58,7 @@
          /*=================== SHADERS =================== */
 
          var vertCode = 'attribute vec3 position;'+
-            'uniform mat4 Pmatrix;'+
-            'uniform mat4 Vmatrix;'+
-            'uniform mat4 Mmatrix;'+
+            'uniform mat4 Pmatrix; uniform mat4 Vmatrix; uniform mat4 Mmatrix;'+
             'attribute vec3 color;'+//the color of the point
             'varying vec3 vColor;'+
             'void main(void) { '+//pre-built function
@@ -139,8 +138,8 @@
             if (!drag) return false;
             dX = (e.pageX-old_x)*2*Math.PI/canvas.width,
             dY = (e.pageY-old_y)*2*Math.PI/canvas.height;
-            THETA+= dX;
-            PHI+=dY;
+            THETA += dX;
+            PHI += dY;
             old_x = e.pageX, old_y = e.pageY;
             e.preventDefault();
          };
@@ -193,16 +192,13 @@
             //set model matrix to I4
 
             mo_matrix[0] = 1, mo_matrix[1] = 0, mo_matrix[2] = 0, mo_matrix[3] = 0,
-
             mo_matrix[4] = 0, mo_matrix[5] = 1, mo_matrix[6] = 0, mo_matrix[7] = 0,
-
             mo_matrix[8] = 0, mo_matrix[9] = 0, mo_matrix[10] = 1, mo_matrix[11] = 0,
-
             mo_matrix[12] = 0, mo_matrix[13] = 0, mo_matrix[14] = 0, mo_matrix[15] = 1;
 
             rotateY(mo_matrix, THETA); rotateX(mo_matrix, PHI);
 
-            time_old = time; gl.enable(gl.DEPTH_TEST);
+            time_ol d = time;  gl.enable(gl.DEPTH_TEST);
             // gl.depthFunc(gl.LEQUAL);
 
             gl.clearColor(0.5, 0.5, 0.5, 0.9); gl.clearDepth(1.0);
