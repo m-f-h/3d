@@ -2,14 +2,12 @@
 <html>
    <body>
       <canvas width = "570" height = "570" id = "my_Canvas"></canvas>
-
       <script>
-         /*============= Creating a canvas ======================*/
+         /*============= Create a canvas ======================*/
          var canvas = document.getElementById('my_Canvas');
          gl = canvas.getContext('experimental-webgl');
 
-         /*========== Defining and storing the geometry ==========*/
-
+         /*========== Define and store the geometry ==========*/
          var cube_vertices = [ /* four corners for each of the 6 faces */
             -1,-1,-1,   1,-1,-1,   1, 1,-1,  -1, 1,-1,
             -1,-1, 1,   1,-1, 1,   1, 1, 1,  -1, 1, 1,
@@ -19,7 +17,7 @@
             -1, 1,-1,  -1, 1, 1,   1, 1, 1,   1, 1,-1, 
          ];
 
-  const faceColors = [ /* R,G,B,T */
+  const faceColors = [ /* R,G,B,T : colors of the faces */
     [1.0,  1.0,  1.0,  1.0],    // front : white
     [1.0,  0.0,  0.0,  1.0],    // back : red
     [0.0,  1.0,  0.0,  1.0],    // top : green
@@ -28,8 +26,7 @@
     [1.0,  0.0,  1.0,  1.0]     // left : magenta
   ];
   // Convert table of (face) colors to table of vertex colors, by repeating each face color 4 x for each corner of the face. 
-  var cube_colors = []; /* colors of the faces */
-
+  var cube_colors = []; /* colors of the borders */
   for (j=0; j<faceColors.length; j++) {
     const c = faceColors[j];
     cube_colors = cube_colors.concat(c, c, c, c);
@@ -183,7 +180,7 @@
 
          /*=================== Drawing =================== */
 
-         var THETA = 0, PHI = 0;, time_old = 0;
+         var THETA = 0, PHI = 0, time_old = 0;
 
          var animate = function(time) {
             var dt = time-time_old;
